@@ -10,7 +10,7 @@ A custom DAW planner implemented as a Nav2 controller plugin. It works with a Tu
 4. Clone this repo to a ros workspace and build it. <br/>
 ```
 cd <ros_workspace>/src
-git clone https://github.com/anandvgeorge/custom-dwa-planner.git
+git clone https://github.com/anandvgeorge/custom_dwa_planner.git
 cd ../
 colcon build --packages-select custom_dwa_planner
 source install/setup.bash
