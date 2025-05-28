@@ -9,6 +9,10 @@
 #include "geometry_msgs/msg/twist_stamped.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 
+#include <nav_msgs/msg/path.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+
 #include <memory>
 #include <string>
 
@@ -48,10 +52,14 @@ private:
     std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
     nav_msgs::msg::Path global_path_;
+    std::vector<std::tuple<double, double, double>> best_trajectory_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr selected_traj_pub_;
     double max_vel_x_, max_vel_y_, max_vel_theta_;
     double sim_time_;
     double linear_granularity_, angular_granularity_;
     double goal_weight_, obstacle_weight_, speed_weight_, smoothness_weight_;
+
+    void publishTrajectory();
 };
 
 } // namespace custom_dwa_planner

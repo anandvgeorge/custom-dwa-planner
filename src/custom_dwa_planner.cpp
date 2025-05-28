@@ -46,6 +46,8 @@ void CustomDWAPlanner::configure(
         obstacle_weight_ = node_->get_parameter(name + ".obstacle_weight").as_double();
         speed_weight_ = node_->get_parameter(name + ".speed_weight").as_double();
         smoothness_weight_ = node_->get_parameter(name + ".smoothness_weight").as_double();
+
+        selected_traj_pub_ = node_->create_publisher<nav_msgs::msg::Path>("dwa_selected_trajectory", 10);
       
         RCLCPP_INFO(node_->get_logger(), "Custom DWA Planner configured: %s", plugin_name_.c_str());
       }
@@ -158,6 +160,7 @@ geometry_msgs::msg::TwistStamped CustomDWAPlanner::computeVelocityCommands(
         best_vx = vx;
         best_vy = 0.0; // Differential drive: no lateral movement
         best_vth = vth;
+        best_trajectory_ = trajectory;
       }
     }
   }
@@ -167,6 +170,8 @@ geometry_msgs::msg::TwistStamped CustomDWAPlanner::computeVelocityCommands(
   cmd_vel.twist.linear.x = best_vx;
   cmd_vel.twist.linear.y = best_vy;
   cmd_vel.twist.angular.z = best_vth;
+
+  publishTrajectory();
 
   RCLCPP_INFO(node_->get_logger(), "Computed velocity: vx=%.2f, vth=%.2f", best_vx, best_vth);
   return cmd_vel;
@@ -182,6 +187,28 @@ void CustomDWAPlanner::setSpeedLimit(const double & speed_limit, const bool & pe
     max_vel_theta_ = speed_limit;
   }
   RCLCPP_INFO(node_->get_logger(), "Speed limit set: max_vel_x=%.2f, max_vel_theta=%.2f", max_vel_x_, max_vel_theta_);
+}
+
+void CustomDWAPlanner::publishTrajectory()
+{
+  nav_msgs::msg::Path path;
+  path.header.frame_id = "map";
+  path.header.stamp = node_->now();
+
+  for (const auto & [x, y, yaw] : best_trajectory_) {
+    geometry_msgs::msg::PoseStamped pose;
+    pose.header = path.header;
+    pose.pose.position.x = x;
+    pose.pose.position.y = y;
+    pose.pose.position.z = 0.0;
+    tf2::Quaternion q;
+    q.setRPY(0, 0, yaw);  // convert yaw to quaternion
+    pose.pose.orientation = tf2::toMsg(q);
+    path.poses.push_back(pose);
+  }
+
+  selected_traj_pub_->publish(path);
+  RCLCPP_INFO(node_->get_logger(), "Published selected trajectory with %zu poses", path.poses.size());
 }
 
 } // namespace custom_dwa_planner
