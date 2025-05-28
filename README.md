@@ -1,7 +1,7 @@
 # Custom DWA Planner
 A custom DAW planner implemented as a Nav2 controller plugin. It works with a Turtlebot3 burger model robot to move to a given goal, while avoiding obstacles. Since the planner is integrated with the nav2 stack, the main behaviour tree, global planning, local and global costmaps, slam etc. are not separately implemented. Relevant parameters of the planner are specified below in this README. 
 
-Below GIF shows the demo of the planner controlling a Turtlebot3 Burger robot in a Gazebo world. Also the same video is present [here](assets/plan.mp4).
+Below GIF shows the demo of controlling a Turtlebot3 Burger robot in a Gazebo world. More videos are present in [assets](assets).
 
 [![Watch the video](assets/demo.gif)](assets/plan.mp4)
 
