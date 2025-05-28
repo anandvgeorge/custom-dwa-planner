@@ -56,6 +56,10 @@ install(DIRECTORY config
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(DIRECTORY rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+
 install(
   FILES plugins.xml
   DESTINATION share/${PROJECT_NAME} 

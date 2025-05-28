@@ -1,69 +1,32 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.substitutions import LaunchConfiguration
+from launch_ros.substitutions import FindPackageShare
 import os
-from ament_index_python.packages import get_package_share_directory
 
 def generate_launch_description():
-    pkg_name = 'custom_dwa_planner'
-    params_file = os.path.join(
-        get_package_share_directory(pkg_name),
-        'config',
-        'nav2_params.yaml'
-    )
+    nav2_bringup_dir = FindPackageShare('nav2_bringup').find('nav2_bringup')
 
     return LaunchDescription([
-        # Start SLAM Toolbox in synchronous mode
-        Node(
-            package='slam_toolbox',
-            executable='sync_slam_toolbox_node',
-            name='slam_toolbox',
-            output='screen',
-            parameters=[{'use_sim_time': True}]
+        DeclareLaunchArgument(
+            'params_file',
+            default_value=os.path.join(
+                FindPackageShare('custom_dwa_planner').find('custom_dwa_planner'),
+                'config',
+                'nav2_params.yaml'
+            )
         ),
-
-        Node(
-            package='nav2_controller',
-            executable='controller_server',
-            name='controller_server',
-            output='screen',
-            parameters=[params_file]
+        
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(nav2_bringup_dir, 'launch', 'bringup_launch.py')
+            ),
+            launch_arguments={
+                'slam': 'True',
+                'use_sim_time': 'True',
+                'params_file': LaunchConfiguration('params_file'),
+                'map': 'dummy.yaml'
+            }.items()
         ),
-        Node(
-            package='nav2_planner',
-            executable='planner_server',
-            name='planner_server',
-            output='screen',
-            parameters=[params_file]
-        ),
-        Node(
-            package='nav2_bt_navigator',
-            executable='bt_navigator',
-            name='bt_navigator',
-            output='screen',
-            parameters=[params_file]
-        ),
-        # Node(
-        #     package='nav2_recoveries',
-        #     executable='recoveries_server',
-        #     name='recoveries_server',
-        #     output='screen',
-        #     parameters=[params_file]
-        # ),
-        Node(
-            package='nav2_lifecycle_manager',
-            executable='lifecycle_manager',
-            name='lifecycle_manager_navigation',
-            output='screen',
-            parameters=[{
-                'use_sim_time': True,
-                'autostart': True,
-                'node_names': [
-                    'slam_toolbox',
-                    'controller_server',
-                    'planner_server',
-                    'bt_navigator',
-                    'recoveries_server'
-                ]
-            }]
-        )
     ])

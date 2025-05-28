@@ -26,17 +26,12 @@ Bring up nav2 with custom dwa controller
 ```
 cd <ros_workspace>
 source install/setup.bash
-ros2 launch nav2_bringup bringup_launch.py\
-    slam:=True \
-    use_sim_time:=True \
-    params_file:=src/custom_dwa_planner/config/nav2_params.yaml \
-    map:=dummy.yaml
+ros2 launch custom_dwa_planner nav2_with_slam.launch.py 
 ```
 
 Launch rviz2 with the config file
 ```
-cd <ros_workspace>
-rviz2 -d src/custom_dwa_planner/config/turtlebot_cutom_controller.rviz 
+ros2 launch custom_dwa_planner launch_rviz.launch.py
 ```
 
 Mark the goal with 2D Goal Pose
