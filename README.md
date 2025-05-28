@@ -42,6 +42,20 @@ Mark the goal with 2D Goal Pose
 
 The robot should move to the goal!
 
+## Parameters
+Below are the parameters of DWA planner, and these default values are configured in the params file.
+| Parameter Name        | Default Value | Description                                |
+|-----------------------|---------------|--------------------------------------------|
+| `desired_linear_vel`  | 0.5           | Desired forward velocity of the robot (m/s)|
+| `max_angular_vel`     | 1.0           | Maximum allowed angular velocity (rad/s)   |
+| `lookahead_time`      | 1.0           | Time horizon for trajectory simulation (s) |
+| `linear_granularity`  | 0.05          | Step size in linear velocity sampling      |
+| `angular_granularity` | 0.1           | Step size in angular velocity sampling     |
+| `goal_weight`         | 3.0           | Weight for goal proximity in cost function |
+| `obstacle_weight`     | 1.0           | Weight for obstacle avoidance              |
+| `speed_weight`        | 1.0           | Weight for higher velocity trajectories    |
+| `smoothness_weight`   | 0.0           | Weight for smoother trajectory curves      |
+
 ## Limitations
 1. *Smoothness cost related* -- When the smoothness cost is enabled (above zero), the robot does not move to the goal if the initial global path requires the robot to rotate too much towards the path. If the global path is already algned in almost the same direction of the robot, the robot moves towars the goal
 2. *Dymanic obstacles* -- Not tested yet.
